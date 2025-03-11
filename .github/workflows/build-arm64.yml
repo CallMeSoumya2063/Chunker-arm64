@@ -1,0 +1,35 @@
+name: Build Chunker CLI for ARM64
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-arm64:
+    # Use the GitHub-hosted ARM64 runner (available in public preview)
+    runs-on: ubuntu-22.04-arm64
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java 17 for ARM64
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          architecture: aarch64
+
+      - name: Build Chunker CLI
+        run: |
+          # If you want to skip tests (or adjust build tasks) add -x test
+          ./gradlew build -x test
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: chunker-cli-arm64
+          # Adjust the path if your native executable or CLI jar is produced elsewhere.
+          path: build/libs/*
